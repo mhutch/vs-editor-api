@@ -12,6 +12,7 @@ using Microsoft.VisualStudio.Text.Utilities;
 using Microsoft.VisualStudio.Threading;
 using Microsoft.VisualStudio.Utilities;
 using Strings = Microsoft.VisualStudio.Language.Intellisense.Implementation.Strings;
+using BF = System.Reflection.BindingFlags;
 
 namespace Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Implementation
 {
@@ -1019,7 +1020,7 @@ namespace Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Implement
                 if (requestedSuggestionItemOptions == null && context.SuggestionItemOptions != null)
                     requestedSuggestionItemOptions = context.SuggestionItemOptions;
             }
-            
+
             return new CompletionSourceConnectionResult(sourceUsesSuggestionMode, requestedSuggestionItemOptions, initialSelectionHint, initialItemsBuilder.ToImmutable(), filterBuilder.ToImmutable());
         }
 
@@ -1737,6 +1738,11 @@ namespace Microsoft.VisualStudio.Language.Intellisense.AsyncCompletion.Implement
         private static bool IsTabOrEmpty(char typedChar)
         {
             return typedChar.Equals(default) || typedChar.Equals('\t');
+        }
+
+        public CompletionList<T> CreateCompletionList<T>(IEnumerable<T> completionItems)
+        {
+            return (CompletionList<T>) Activator.CreateInstance(typeof(CompletionList<T>), BF.NonPublic | BF.Public, null, [completionItems], null);
         }
     }
 }
